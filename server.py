@@ -10,19 +10,21 @@ s = socket.socket(
     socket.SOCK_STREAM      # The SOCK_STREAM means connection-oriented TCP protocol
 )
 
+LOGGER = logger("server")
+
 
 def connect_to(host: str, port: int = PORT):
     try:
-        logger("server").info(f"Resolving IP for {host}")
+        LOGGER.info(f"Resolving IP for {host}")
         host_ip = socket.gethostbyname(host)
-        logger("server").info(f"IP for {host} is {host_ip}")
+        LOGGER.info(f"IP for {host} is {host_ip}")
     except socket.gaierror:
-        logger("server").info(f'Failed resolving the ip for "{host}"')
+        LOGGER.info(f'Failed resolving the ip for "{host}"')
         sys.exit()
 
-    logger("server").info(f"Connecting to {host_ip}")
+    LOGGER.info(f"Connecting to {host_ip}")
     s.connect((host_ip, port))
-    logger("server").info(f"Successfully connected to {host} on {host_ip}")
+    LOGGER.info(f"Successfully connected to {host} on {host_ip}")
 
 
 if __name__ == '__main__':
