@@ -21,10 +21,15 @@ class Server:
         Binds the server to a specific IP and port so that it can listen to incoming requests on that IP and port
         :return:
         """
-        # Empty string instead of IP makes the server listen to requests coming from other computers on the network
+        # Empty string instead of IP makes the server listen to
+        # requests coming from other computers on the network.
+        # If we would have passed 127.0.0.1 then it would have
+        # listened to only those calls made within the local computer.
         self.socket.bind(("", port))
         self.logger.info(f"Socket is bound to {port}")
 
+        # 5 here means that 5 connections are kept waiting if the server is
+        # busy and if a 6th socket tries to connect then the connection is refused.
         self.socket.listen(5)
         self.logger.info(f"Server is listening on {port}")
 
@@ -33,7 +38,7 @@ class Server:
         while True:
             # Establish connection with client.
             c, addr = self.socket.accept()
-            print('Got connection from', addr)
+            self.logger.info(f'Got connection from {addr}')
 
             # send a thank you message to the client. encoding to send byte type.
             c.send('Thank you for connecting'.encode())
@@ -42,7 +47,7 @@ class Server:
             c.close()
 
             # Breaking once connection closed
-            break
+            # break
 
 
 def main():
