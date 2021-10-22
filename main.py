@@ -1,5 +1,10 @@
 import asyncio
 import datetime
+from typing import TypedDict, Literal
+
+
+async def main():
+    await asyncio.create_task(say_hello())
 
 
 def log(*args):
@@ -12,5 +17,20 @@ async def say_hello():
     log("Hello World")
 
 
+def test(a: str) -> int:
+    return 2
+
+
+class Airplane(TypedDict):
+    id: str
+    name: str
+    engine: Literal['piston', 'turbo_prop', 'jet']
+
+
 if __name__ == '__main__':
-    asyncio.run(say_hello())
+    airplane = Airplane(id="id", name="Piper Pawnee", engine="piston")
+
+    print(airplane)
+
+
+
