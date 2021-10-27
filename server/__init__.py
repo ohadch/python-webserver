@@ -27,10 +27,6 @@ class Server:
 
     def listen(self, port: int):
         """
-        Puts the server into listening mode. This allows the server to listen to incoming connections
-        :return:
-        """
-        """
         Binds the server to a specific IP and port so that it can listen to incoming requests on that IP and port
         :return:
         """
@@ -52,22 +48,22 @@ class Server:
             self._accept_connection()
 
     def _accept_connection(self):
+        # Establish connection with client.
+        conn, address = self.socket.accept()
+
         try:
-            # Establish connection with client.
-            conn, address = self.socket.accept()
             data = conn.recv(1024).decode("utf-8")
-            first_line, method, endpoint, headers = parse_request(data)
-            self.logger.info(first_line)
+            headline, method, endpoint, headers = parse_request(data)
+            self.logger.info(headline)
 
             self._handle_request(conn, method, endpoint, headers)
         except Exception as e:
             self.logger.error(f"Unknown exception occurred: {e}")
-        finally:
             print(traceback.format_exc())
             conn.close()
 
     def _handle_request(self, conn: socket.socket, method: TYPE_REQUEST_METHOD, endpoint: str, headers: dict):
-        response: Response = {"code": 400, "message": "not found"}
+        response: Response = {"code": 404, "message": "not found"}
         for handler in self.handlers:
             if handler.endpoint == endpoint and handler.method == method:
                 response = handler.handle()
