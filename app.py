@@ -1,12 +1,11 @@
-from server import Server, RequestHandler
+from server import Server, RequestHandler, Response
 
 
-def hello_world():
-    return "Hello world!"
-
+def hello_world() -> Response:
+    return {"code": 200, "message": "Hello world!"}
 
 app = Server([
-    RequestHandler("/", hello_world)
+    RequestHandler("GET", "/test", hello_world)
 ])
 
 if __name__ == '__main__':

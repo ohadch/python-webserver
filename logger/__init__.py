@@ -1,6 +1,7 @@
 import logging
+from typing import Dict
 
-_loggers = {}
+_loggers: Dict = {}
 
 LOG_MESSAGE_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
 

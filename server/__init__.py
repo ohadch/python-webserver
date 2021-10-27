@@ -1,7 +1,11 @@
 import socket
+import traceback
+from typing import List
 
 from logger import logger
+from server.http_tools import parse_request, send_response
 from server.request_handler import RequestHandler
+from server.types import TYPE_REQUEST_METHOD, Response
 
 
 class Server:
@@ -11,21 +15,15 @@ class Server:
         self.socket.close()
         print("End")
 
-    def __init__(self, handlers: [RequestHandler]):
+    def __init__(self, handlers: List[RequestHandler]):
         self.logger = logger(f"server")
         self.socket = socket.socket(
             socket.AF_INET,         # AF_INET refers to the address-family ipv4
             socket.SOCK_STREAM      # The SOCK_STREAM means connection-oriented TCP protocol
         )
-        self.handlers: [RequestHandler] = handlers
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.handlers: List[RequestHandler] = handlers
         self.waiting_connections: int = 5
-
-    def handle_request(self, connection, endpoint: str):
-        for handler in self.handlers:
-            if handler.endpoint == endpoint:
-                response = handler.handle()
-                connection.send(response)
-                connection.close()
 
     def listen(self, port: int):
         """
@@ -51,11 +49,33 @@ class Server:
         # a forever loop until we interrupt it or
         # an error occurs
         while True:
-            try:
-                # Establish connection with client.
-                connection, address = self.socket.accept()
-                self.logger.info(f'Got connection from {address}')
-                self.handle_request(connection, address)
-            except Exception as e:
-                self.logger.error(f"Unknown exception occurred, exiting: {e}")
-                exit(-1)
+            self._accept_connection()
+
+    def _accept_connection(self):
+        try:
+            # Establish connection with client.
+            conn, address = self.socket.accept()
+            data = conn.recv(1024).decode("utf-8")
+            first_line, method, endpoint, headers = parse_request(data)
+            self.logger.info(first_line)
+
+            self._handle_request(conn, method, endpoint, headers)
+        except Exception as e:
+            self.logger.error(f"Unknown exception occurred: {e}")
+        finally:
+            print(traceback.format_exc())
+            conn.close()
+
+    def _handle_request(self, conn: socket.socket, method: TYPE_REQUEST_METHOD, endpoint: str, headers: dict):
+        response: Response = {"code": 400, "message": "not found"}
+        for handler in self.handlers:
+            if handler.endpoint == endpoint and handler.method == method:
+                response = handler.handle()
+                break
+
+        send_response(conn, response)
+
+    @staticmethod
+    def _parse_data(data: bytes):
+        s = data.decode("utf-8")
+        return s
