@@ -5,7 +5,7 @@ from http.client import responses
 from io import StringIO
 from typing import Tuple, Dict
 
-from server.types import Response
+from server.types import Response, TYPE_REQUEST_METHOD
 
 
 def send_response(conn: socket.socket, response: Response):
@@ -15,7 +15,7 @@ def send_response(conn: socket.socket, response: Response):
     conn.close()
 
 
-def parse_request(request_string: str) -> Tuple[str, str, str, Dict]:
+def parse_request(request_string: str) -> Tuple[str, TYPE_REQUEST_METHOD, str, Dict]:
     # Pop the first line so we only process headers
     headline, headers = request_string.split('\r\n', 1)
 

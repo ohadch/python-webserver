@@ -1,11 +1,11 @@
-from server import Server, RequestHandler, Response
+from server import ThreadedServer, RequestHandler, Response
 
 
 def hello_world() -> Response:
     return {"code": 200, "message": "Hello world!"}
 
 
-app = Server([
+app = ThreadedServer([
     RequestHandler("GET", "/test", hello_world)
 ])
 

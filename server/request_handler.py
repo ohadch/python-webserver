@@ -1,5 +1,7 @@
+import threading
 from typing import Callable
 
+from logger import logger
 from server.types import TYPE_REQUEST_METHOD, Response
 
 
@@ -11,4 +13,5 @@ class RequestHandler:
         self.action = action
 
     def handle(self):
+        logger(f"RequestHandler_thread_{threading.get_ident()}").info("Handling request")
         return self.action()
