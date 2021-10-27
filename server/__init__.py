@@ -70,8 +70,3 @@ class Server:
                 break
 
         send_response(conn, response)
-
-    @staticmethod
-    def _parse_data(data: bytes):
-        s = data.decode("utf-8")
-        return s
