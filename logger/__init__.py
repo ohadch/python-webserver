@@ -46,5 +46,3 @@ def logger(name: str) -> logging.Logger:
     _loggers[name] = _logger
 
     return _logger
-
-
